@@ -8,9 +8,7 @@
 #include <strings.h>     /* for bzero, bcopy */
 #include <unistd.h>      /* for read, write */
 #include <sys/socket.h>  /* for socket use */
-#include <netdb.h>
 #include <netinet/in.h>
-#include <arpa/inet.h>
 #include <pthread.h>
 
 #define MAXLINE  8192  /* max text line length */
