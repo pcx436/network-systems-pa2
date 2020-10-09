@@ -47,7 +47,9 @@ void *thread(void *vargp) {
 	int connfd = *((int *) vargp);
 	pthread_detach(pthread_self());
 	free(vargp);
+
 	echo(connfd);
+
 	close(connfd);
 	return NULL;
 }
