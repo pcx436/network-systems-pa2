@@ -66,6 +66,13 @@ void echo(int connfd) {
 
 	bytesRead = read(connfd, receiveBuffer, MAXLINE);
 	printf("server received the following %ldB request:\n%s\n", bytesRead, receiveBuffer);
+
+	// logic time!
+	// get HTTP request method, request URI, and request version separately
+	method = strtok(receiveBuffer, " ");
+	uri = strtok(NULL, " ");
+	version = strtok(NULL, " ");
+
 	strcpy(receiveBuffer, response);
 	printf("server returning a http message with the following content.\n%s\n", receiveBuffer);
 	write(connfd, receiveBuffer, strlen(response));
