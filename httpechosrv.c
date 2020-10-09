@@ -74,9 +74,14 @@ void echo(int connfd) {
 	uri = strtok(NULL, " ");
 	version = strtok(NULL, " ");
 
-	strcpy(receiveBuffer, response);
-	printf("server returning a http message with the following content.\n%s\n", receiveBuffer);
-	write(connfd, receiveBuffer, strlen(response));
+	if (method && uri && version){
+
+	} else { // Invalid HTTP request, assume version 1.1
+		sprintf(response, errorMessage, "1.1", HTTP_ERROR);
+	}
+
+	printf("server returning a http message with the following content.\n%s\n", response);
+	write(connfd, response, strlen(response));
 
 }
 
