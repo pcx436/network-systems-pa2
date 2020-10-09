@@ -1,4 +1,4 @@
-* 
+/**
  * tcpechosrv.c - A concurrent TCP echo server using threads
  */
 
