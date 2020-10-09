@@ -58,15 +58,17 @@ void *thread(void *vargp) {
  * echo - read and echo text lines until client closes connection
  */
 void echo(int connfd) {
-	size_t n;
-	char buf[MAXLINE];
-	char httpmsg[] = "HTTP/1.1 200 Document Follows\r\nContent-Type:text/html\r\nContent-Length:32\r\n\r\n<html><h1>Hello CSCI4273 Course!</h1>";
+	size_t bytesRead;
+	char receiveBuffer[MAXLINE], *method, *uri, *version, *response = (char *)malloc(MAXBUF);
+	// char response[] = "HTTP/1.1 200 Document Follows\r\nContent-Type:text/html\r\nContent-Length:32\r\n\r\n<html><h1>Hello CSCI4273 Course!</h1>";
+	bzero(receiveBuffer, MAXLINE);  // fill receiveBuffer with \0
+	bzero(response, MAXBUF);  // fill response with \0
 
-	n = read(connfd, buf, MAXLINE);
-	printf("server received the following request:\n%s\n", buf);
-	strcpy(buf, httpmsg);
-	printf("server returning a http message with the following content.\n%s\n", buf);
-	write(connfd, buf, strlen(httpmsg));
+	bytesRead = read(connfd, receiveBuffer, MAXLINE);
+	printf("server received the following %ldB request:\n%s\n", bytesRead, receiveBuffer);
+	strcpy(receiveBuffer, response);
+	printf("server returning a http message with the following content.\n%s\n", receiveBuffer);
+	write(connfd, receiveBuffer, strlen(response));
 
 }
 
