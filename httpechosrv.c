@@ -53,7 +53,8 @@ void interruptHandler(int useless) {
 }
 
 int main(int argc, char **argv) {
-	int listenfd, *connfdp, port, clientlen = sizeof(struct sockaddr_in);
+	int listenfd, *connfdp, port;
+	socklen_t clientlen = sizeof(struct sockaddr_in);
 	struct sockaddr_in clientaddr;
 	pthread_t tid;
 
