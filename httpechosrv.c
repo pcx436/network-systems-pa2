@@ -115,6 +115,9 @@ void echo(int connfd) {
 	method = strtok_r(receiveBuffer, " ", &savePtr);
 	uri = strtok_r(NULL, " ", &savePtr);
 	version = strtok_r(NULL, "\n", &savePtr);
+	trimSpace(method);
+	trimSpace(uri);
+	trimSpace(version);
 
 	if (method && uri && version){
 
