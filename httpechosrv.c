@@ -72,6 +72,7 @@ int main(int argc, char **argv) {
 		*connfdp = accept(listenfd, (struct sockaddr *) &clientaddr, &clientlen);
 		pthread_create(&tid, NULL, thread, connfdp);
 	}
+	return 0;
 }
 
 /* thread routine */
