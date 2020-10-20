@@ -108,8 +108,7 @@ void echo(int connfd) {
 	bzero(response, MAXBUF);  // fill response with \0
 	bzero(relativeURI, PATH_MAX);
 
-	bytesRead = read(connfd, receiveBuffer, MAXLINE);
-	printf("server received the following %ldB request:\n%s\n", bytesRead, receiveBuffer);
+	read(connfd, receiveBuffer, MAXLINE);
 
 	// logic time!
 	// get HTTP request method, request URI, and request version separately
