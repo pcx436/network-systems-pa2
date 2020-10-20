@@ -112,9 +112,9 @@ void echo(int connfd) {
 
 	// logic time!
 	// get HTTP request method, request URI, and request version separately
-	method = strtok(receiveBuffer, " ");
-	uri = strtok(NULL, " ");
-	version = strtok(NULL, " ");
+	method = strtok_r(receiveBuffer, " ", &savePtr);
+	uri = strtok_r(NULL, " ", &savePtr);
+	version = strtok_r(NULL, "\n", &savePtr);
 
 	if (method && uri && version){
 
