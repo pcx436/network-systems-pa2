@@ -128,13 +128,59 @@ void echo(int connfd) {
 		}
 		absoluteURI = realpath(relativeURI, NULL);
 
+		// get absoluteURI of request and ensure it is not trying to escape
+		if (absoluteURI && strncmp(exeResolved, absoluteURI, strlen(exeResolved)) == 0) {
+			/*
+			 * Verify file presence steps:
+			 * Determine if path is a directory
+			 * If it is, look for URI/index.html and URI/index.htm
+			 */
+			cleanedURI = isDirectory(absoluteURI);
+			free(absoluteURI);
+
+			contentType = getType(cleanedURI);
+			fp = fopen(cleanedURI, "r");
+			if (cleanedURI && contentType && fp) {
+				// get file size
+				fseek(fp, 0L, SEEK_END);
+				fileSize = ftell(fp);
+				fseek(fp, 0L, SEEK_SET);
+
+				sprintf(response, "%s %d Document Follows\r\nContent-Type: %s\r\nContent-Length: %ld\r\n\r\n", version, HTTP_OK, contentType, fileSize);
+				send(connfd, response, strlen(response), 0);
+
+				do {
+					bzero(response, MAXBUF);
+
+					bytesRead = fread(response, sizeof(char), MAXBUF, fp);
+
+					if (send(connfd, response, bytesRead, 0) == -1) {
+						perror("[-]Error in sending file.");
+						break;
+					}
+				} while(bytesRead == MAXBUF);
+				bzero(response, MAXBUF);
+				fclose(fp);
+				free(cleanedURI);
+			} else {
+				sprintf(response, errorMessage, version);
+			}
+		} else {
+			// attempted directory escaping, return error
+			sprintf(response, errorMessage, version);
+		}
 	} else { // Invalid HTTP request, assume version 1.1
-		sprintf(response, errorMessage, "1.1", HTTP_ERROR);
+		sprintf(response, errorMessage, "HTTP/1.1");
 	}
 
-	printf("server returning a http message with the following content.\n%s\n", response);
-	write(connfd, response, strlen(response));
+	if (strlen(response) > 0){
+		send(connfd, response, strlen(response), 0);
+	}
 
+	free(response);
+	free(exeResolved);
+	if(relativeURI)
+		free(relativeURI);
 }
 
 /* 
