@@ -15,7 +15,7 @@
 #define MAXBUF      8192  /* max I/O buffer size */
 #define LISTENQ     1024  /* second argument to listen() */
 #define HTTP_OK     200
-#define HTTP_ERROR  500
+#define COUNT_TYPES 8
 
 int open_listenfd(int port);
 
