@@ -106,6 +106,7 @@ void echo(int connfd) {
 	// char response[] = "HTTP/1.1 200 Document Follows\r\nContent-Type:text/html\r\nContent-Length:32\r\n\r\n<html><h1>Hello CSCI4273 Course!</h1>";
 	bzero(receiveBuffer, MAXLINE);  // fill receiveBuffer with \0
 	bzero(response, MAXBUF);  // fill response with \0
+	bzero(relativeURI, PATH_MAX);
 
 	bytesRead = read(connfd, receiveBuffer, MAXLINE);
 	printf("server received the following %ldB request:\n%s\n", bytesRead, receiveBuffer);
