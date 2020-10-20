@@ -96,8 +96,9 @@ void *thread(void *vargp) {
 	return NULL;
 }
 
-/*
- * echo - read and echo text lines until client closes connection
+/**
+ *
+ * @param connfd
  */
 void echo(int connfd) {
 	size_t bytesRead;
