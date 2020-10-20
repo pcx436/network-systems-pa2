@@ -119,7 +119,7 @@ void echo(int connfd) {
 	trimSpace(uri);
 	trimSpace(version);
 
-	if (method && uri && version){
+	if (method && uri && version && strcmp(method, "GET") == 0){  // happy path
 
 	} else { // Invalid HTTP request, assume version 1.1
 		sprintf(response, errorMessage, "1.1", HTTP_ERROR);
