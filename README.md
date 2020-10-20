@@ -33,5 +33,20 @@ you do not recognize this file, ignore it and use the `Makefile` instead.
 This file is a custom Python 3 script designed to stress test the server. Running `python3 httpStressTest.py --help`
 will detail how to use this program if you so desire.
 
+## Limitations
+Due to the constraints of the writeup, this server could not be designed to handle all file types that can be served
+over a normal HTTP server. It is only built to handle the following file types:
+* `.htm`
+* `.html`
+* `.txt`
+* `.png`
+* `.gif`
+* `.jpg`
+* `.ico`
+* `.css`
+* `.js`
+
+Attempting to request a file type other than these will result in an HTTP 500 error.
+
 ## Credits
 This project was designed by Jacob Malcy at the University of Colorado Boulder during the Fall 2020 semester.
