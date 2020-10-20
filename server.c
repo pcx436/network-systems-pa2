@@ -69,7 +69,10 @@ int main(int argc, char **argv) {
 	port = atoi(argv[1]);
 
 	// create the socket we'll use
-	listenfd = open_listenfd(port);
+	if((listenfd = open_listenfd(port)) < 0) {
+		perror("Could not open socket");
+		return 1;
+	}
 
 	// while SIGINT not received
 	while (!killed) {
