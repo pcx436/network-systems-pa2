@@ -71,6 +71,8 @@ int main(int argc, char **argv) {
 		connfdp = malloc(sizeof(int));
 		if ((*connfdp = accept(listenfd, (struct sockaddr *) &clientaddr, &clientlen)) > 0)
 			pthread_create(&tid, NULL, thread, connfdp);
+		else
+			free(connfdp);
 	}
 	return 0;
 }
