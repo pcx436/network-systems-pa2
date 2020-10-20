@@ -67,10 +67,10 @@ int main(int argc, char **argv) {
 	port = atoi(argv[1]);
 
 	listenfd = open_listenfd(port);
-	while (1) {
+	while (!killed) {
 		connfdp = malloc(sizeof(int));
-		*connfdp = accept(listenfd, (struct sockaddr *) &clientaddr, &clientlen);
-		pthread_create(&tid, NULL, thread, connfdp);
+		if ((*connfdp = accept(listenfd, (struct sockaddr *) &clientaddr, &clientlen)) > 0)
+			pthread_create(&tid, NULL, thread, connfdp);
 	}
 	return 0;
 }
