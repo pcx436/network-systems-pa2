@@ -188,7 +188,7 @@ void echo(int connfd) {
  * Returns -1 in case of failure 
  */
 int open_listenfd(int port) {
-	int listenfd, optval = 1;
+	int listenfd, optval = 1, flags;
 	struct sockaddr_in serveraddr;
 
 	/* Create a socket descriptor */
@@ -208,6 +208,15 @@ int open_listenfd(int port) {
 	serveraddr.sin_port = htons((unsigned short) port);
 	if (bind(listenfd, (struct sockaddr *) &serveraddr, sizeof(serveraddr)) < 0)
 		return -1;
+
+	if ((flags = fcntl(listenfd, F_GETFL, 0)) < 0)
+	{
+		return -1;
+	}
+	if (fcntl(listenfd, F_SETFL, flags | O_NONBLOCK) < 0)
+	{
+		return -1;
+	}
 
 	/* Make it a listening socket ready to accept connection requests */
 	if (listen(listenfd, LISTENQ) < 0)
