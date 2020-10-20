@@ -17,6 +17,8 @@
 #define HTTP_OK     200
 #define COUNT_TYPES 8
 
+static volatile int killed = 0;
+
 char *contentTypes[COUNT_TYPES][2] = {
 		{".html", "text/html"},
 		{".txt", "text/plain"},
@@ -33,6 +35,11 @@ int open_listenfd(int port);
 void echo(int connfd);
 
 void *thread(void *vargp);
+
+
+void interruptHandler(int useless) {
+	killed = 1;
+}
 
 int main(int argc, char **argv) {
 	int listenfd, *connfdp, port, clientlen = sizeof(struct sockaddr_in);
