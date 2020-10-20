@@ -94,8 +94,15 @@ void *thread(void *vargp) {
  */
 void echo(int connfd) {
 	size_t bytesRead;
-	char receiveBuffer[MAXLINE], *method, *uri, *version, *response = (char *)malloc(MAXBUF);
-	char errorMessage[] = "HTTP/%s %d Internal Server Error";
+	long fileSize;
+	char *exeResolved = NULL, *absoluteURI = NULL;
+	char errorMessage[] = "%s 500 Internal Server Error\r\n";
+	char receiveBuffer[MAXLINE], *response = (char *)malloc(MAXBUF);
+	char *method, *uri, *version, *savePtr, *relativeURI = (char *)malloc(PATH_MAX), *cleanedURI;
+	char *contentType;
+	exeResolved = realpath("./www/", NULL);
+	FILE *fp;
+
 	// char response[] = "HTTP/1.1 200 Document Follows\r\nContent-Type:text/html\r\nContent-Length:32\r\n\r\n<html><h1>Hello CSCI4273 Course!</h1>";
 	bzero(receiveBuffer, MAXLINE);  // fill receiveBuffer with \0
 	bzero(response, MAXBUF);  // fill response with \0
