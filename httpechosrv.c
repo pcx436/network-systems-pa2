@@ -251,6 +251,37 @@ char *getType(char *uri) {
 	return NULL;
 }
 
+/*
+ * return 0 if uri is a dir, errno otherwise
+ */
+char * isDirectory(char *uri) {
+	DIR* dir = opendir(uri);
+	char *returnedFile = (char *)malloc(PATH_MAX), *errorBuffer = (char *)malloc(MAXBUF);
+	struct dirent *ent;
+
+	bzero(returnedFile, PATH_MAX);
+
+	if (dir) {
+		// loop while finding files and haven't found default page
+		while ((ent = readdir(dir)) != NULL && strlen(returnedFile) == 0) {
+			if (strcmp(ent->d_name, "index.html") == 0 || strcmp(ent->d_name, "index.htm") == 0) {
+				sprintf(returnedFile, "%s/%s", uri, ent->d_name);
+			}
+		}
+		closedir(dir);
+	} else if (errno == ENOTDIR && access(uri, R_OK) == 0){
+		// the URI is to a file that can be read
+		strncpy(returnedFile, uri, PATH_MAX);
+	} else {
+		if(strerror_r(errno, errorBuffer, MAXBUF) == 0)
+			perror(errorBuffer);
+		else
+			perror("Failed to error????");
+	}
+	free(errorBuffer);
+	return returnedFile;
+}
+
 /**
  * Removes trailing spaces from a string.
  * @param str The string to trim space from.
