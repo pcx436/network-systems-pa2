@@ -74,6 +74,11 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
+	if(!isDirectory("./www/")){
+		perror("Missing ./www directory");
+		return 1;
+	}
+
 	// while SIGINT not received
 	while (!killed) {
 		connfdp = malloc(sizeof(int));
