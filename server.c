@@ -21,11 +21,12 @@
 #define MAXBUF      8192  /* max I/O buffer size */
 #define LISTENQ     1024  /* second argument to listen() */
 #define HTTP_OK     200
-#define COUNT_TYPES 8
+#define COUNT_TYPES 9
 
 static volatile int killed = 0;
 
 char *contentTypes[COUNT_TYPES][2] = {
+		{".htm", "text/html"},
 		{".html", "text/html"},
 		{".txt", "text/plain"},
 		{".png", "image/png"},
