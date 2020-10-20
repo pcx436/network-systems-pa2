@@ -4,12 +4,18 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 #include <string.h>      /* for fgets */
 #include <strings.h>     /* for bzero, bcopy */
 #include <unistd.h>      /* for read, write */
 #include <sys/socket.h>  /* for socket use */
 #include <netinet/in.h>
 #include <pthread.h>
+#include <dirent.h>
+#include <errno.h>
+#include <ctype.h>
+#include <signal.h>
+#include <fcntl.h>
 
 #define MAXLINE     8192  /* max text line length */
 #define MAXBUF      8192  /* max I/O buffer size */
