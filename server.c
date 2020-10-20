@@ -38,7 +38,7 @@ char *contentTypes[COUNT_TYPES][2] = {
 
 int open_listenfd(int port);
 
-void echo(int connfd);
+void respond(int connfd);
 
 void *thread(void *vargp);
 
@@ -90,20 +90,20 @@ void *thread(void *vargp) {
 	pthread_detach(pthread_self());  // detach the thread
 	free(vargp);  // don't need that anymore since it was just an int anyway
 
-	echo(connfd);  // run main thread function
+	respond(connfd);  // run main thread function
 
 	close(connfd);  // close the socket
 	return NULL;
 }
 
 /**
- *
- * @param connfd
+ * Responds to any HTTP requests.
+ * @param connfd  connection file descriptor that represents the response socket
  */
-void echo(int connfd) {
-	size_t bytesRead;
-	long fileSize;
-	char *exeResolved = NULL, *absoluteURI = NULL;
+void respond(int connfd) {
+	size_t bytesRead;  // number of bytes read from the user / bytes read from file
+	long fileSize;  // size of the file
+	char *exeResolved = NULL, *absoluteURI = NULL;  // used in path resolution
 	char errorMessage[] = "%s 500 Internal Server Error\r\n";
 	char receiveBuffer[MAXLINE], *response = (char *)malloc(MAXBUF);
 	char *method, *uri, *version, *savePtr, *relativeURI = (char *)malloc(PATH_MAX), *cleanedURI;
