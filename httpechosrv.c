@@ -159,6 +159,32 @@ int open_listenfd(int port) {
 	return listenfd;
 } /* end open_listenfd */
 
+/**
+ * Determine Content-Type of provided URI
+ * @param uri
+ * @return
+ */
+char *getType(char *uri) {
+	int i;
+	unsigned long extensionLength;
+	char *currentExtension, *currentType;
+
+	// If we cannot read the file, return NULL
+	if (access(uri, R_OK) != 0)
+		return NULL;
+
+	for(i = 0; i < COUNT_TYPES; i++){
+		currentExtension = contentTypes[i][0];
+		currentType = contentTypes[i][1];
+		extensionLength = strlen(currentExtension);
+
+		if (extensionLength <= strlen(uri) && strcmp(uri + strlen(uri) - extensionLength, currentExtension) == 0) {
+			return currentType;
+		}
+	}
+
+	return NULL;
+}
 
 /**
  * Removes trailing spaces from a string.
