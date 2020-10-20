@@ -58,17 +58,24 @@ int main(int argc, char **argv) {
 	struct sockaddr_in clientaddr;
 	pthread_t tid;
 
+	// register signal handler
 	signal(SIGINT, interruptHandler);
 
+	// check for incorrect usage
 	if (argc != 2) {
 		fprintf(stderr, "usage: %s <port>\n", argv[0]);
 		exit(0);
 	}
 	port = atoi(argv[1]);
 
+	// create the socket we'll use
 	listenfd = open_listenfd(port);
+
+	// while SIGINT not received
 	while (!killed) {
 		connfdp = malloc(sizeof(int));
+
+		// If received connection, spawn thread. Else, free allocated memory
 		if ((*connfdp = accept(listenfd, (struct sockaddr *) &clientaddr, &clientlen)) > 0)
 			pthread_create(&tid, NULL, thread, connfdp);
 		else
@@ -79,13 +86,13 @@ int main(int argc, char **argv) {
 
 /* thread routine */
 void *thread(void *vargp) {
-	int connfd = *((int *) vargp);
-	pthread_detach(pthread_self());
-	free(vargp);
+	int connfd = *((int *) vargp);  // get the connection file descriptor
+	pthread_detach(pthread_self());  // detach the thread
+	free(vargp);  // don't need that anymore since it was just an int anyway
 
-	echo(connfd);
+	echo(connfd);  // run main thread function
 
-	close(connfd);
+	close(connfd);  // close the socket
 	return NULL;
 }
 
@@ -103,7 +110,6 @@ void echo(int connfd) {
 	exeResolved = realpath("./www/", NULL);
 	FILE *fp;
 
-	// char response[] = "HTTP/1.1 200 Document Follows\r\nContent-Type:text/html\r\nContent-Length:32\r\n\r\n<html><h1>Hello CSCI4273 Course!</h1>";
 	bzero(receiveBuffer, MAXLINE);  // fill receiveBuffer with \0
 	bzero(response, MAXBUF);  // fill response with \0
 	bzero(relativeURI, PATH_MAX);
