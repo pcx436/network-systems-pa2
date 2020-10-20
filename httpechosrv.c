@@ -120,6 +120,13 @@ void echo(int connfd) {
 	trimSpace(version);
 
 	if (method && uri && version && strcmp(method, "GET") == 0){  // happy path
+		// relative path to www folder
+		if(uri[0] == '/') {
+			sprintf(relativeURI, "./www%s", uri);
+		} else {
+			sprintf(relativeURI, "./www/%s", uri);
+		}
+		absoluteURI = realpath(relativeURI, NULL);
 
 	} else { // Invalid HTTP request, assume version 1.1
 		sprintf(response, errorMessage, "1.1", HTTP_ERROR);
