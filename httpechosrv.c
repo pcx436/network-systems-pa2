@@ -17,6 +17,17 @@
 #define HTTP_OK     200
 #define COUNT_TYPES 8
 
+char *contentTypes[COUNT_TYPES][2] = {
+		{".html", "text/html"},
+		{".txt", "text/plain"},
+		{".png", "image/png"},
+		{".gif", "image/gif"},
+		{".jpg", "image/jpg"},
+		{".ico", "image/x-icon"},
+		{".css", "text/css"},
+		{".js", "application/javascript"}
+};
+
 int open_listenfd(int port);
 
 void echo(int connfd);
