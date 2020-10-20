@@ -137,9 +137,10 @@ void respond(int connfd) {
 		} else {
 			sprintf(relativeURI, "./www/%s", uri);
 		}
-		absoluteURI = realpath(relativeURI, NULL);
 
 		// get absoluteURI of request and ensure it is not trying to escape
+		absoluteURI = realpath(relativeURI, NULL);
+
 		if (absoluteURI && strncmp(exeResolved, absoluteURI, strlen(exeResolved)) == 0) {
 			/*
 			 * Verify file presence steps:
