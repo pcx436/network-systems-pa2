@@ -158,3 +158,14 @@ int open_listenfd(int port) {
 		return -1;
 	return listenfd;
 } /* end open_listenfd */
+
+
+/**
+ * Removes trailing spaces from a string.
+ * @param str The string to trim space from.
+ */
+void trimSpace(char *str){
+	int end = strlen(str) - 1;
+	while(isspace(str[end])) end--;
+	str[end+1] = '\0';
+}
