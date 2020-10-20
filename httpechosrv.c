@@ -36,6 +36,11 @@ void echo(int connfd);
 
 void *thread(void *vargp);
 
+char *getType(char *uri);
+
+char * isDirectory(char *uri);
+
+void trimSpace(char *str);
 
 void interruptHandler(int useless) {
 	killed = 1;
