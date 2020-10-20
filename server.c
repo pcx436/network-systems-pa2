@@ -1,5 +1,5 @@
 /**
- * tcpechosrv.c - A concurrent TCP echo server using threads
+ * server.c - A concurrent TCP webserver
  */
 
 #include <stdio.h>
@@ -108,13 +108,16 @@ void echo(int connfd) {
 	char receiveBuffer[MAXLINE], *response = (char *)malloc(MAXBUF);
 	char *method, *uri, *version, *savePtr, *relativeURI = (char *)malloc(PATH_MAX), *cleanedURI;
 	char *contentType;
-	exeResolved = realpath("./www/", NULL);
 	FILE *fp;
+
+	// get the absolute path of the web data directory
+	exeResolved = realpath("./www/", NULL);
 
 	bzero(receiveBuffer, MAXLINE);  // fill receiveBuffer with \0
 	bzero(response, MAXBUF);  // fill response with \0
 	bzero(relativeURI, PATH_MAX);
 
+	// read in some bytes from the user
 	read(connfd, receiveBuffer, MAXLINE);
 
 	// logic time!
@@ -126,8 +129,9 @@ void echo(int connfd) {
 	trimSpace(uri);
 	trimSpace(version);
 
+	// If the user provided the GET method, request URI, and HTTP version
 	if (method && uri && version && strcmp(method, "GET") == 0){  // happy path
-		// relative path to www folder
+		// relative path to www folder (add slash at beginning if it's missing it
 		if(uri[0] == '/') {
 			sprintf(relativeURI, "./www%s", uri);
 		} else {
@@ -142,34 +146,40 @@ void echo(int connfd) {
 			 * Determine if path is a directory
 			 * If it is, look for URI/index.html and URI/index.htm
 			 */
-			cleanedURI = isDirectory(absoluteURI);
+			cleanedURI = isDirectory(absoluteURI);  // check if the file is a directory
 			free(absoluteURI);
 
-			contentType = getType(cleanedURI);
+			contentType = getType(cleanedURI);  // get MIME type of requested content
 			fp = fopen(cleanedURI, "r");
+
+			// if we successfully opened the file
 			if (cleanedURI && contentType && fp) {
 				// get file size
 				fseek(fp, 0L, SEEK_END);
 				fileSize = ftell(fp);
 				fseek(fp, 0L, SEEK_SET);
 
+				// build and send initial header response
 				sprintf(response, "%s %d Document Follows\r\nContent-Type: %s\r\nContent-Length: %ld\r\n\r\n", version, HTTP_OK, contentType, fileSize);
 				send(connfd, response, strlen(response), 0);
 
+				// read lines from the file and send them until an error occurs or we finish reading
 				do {
-					bzero(response, MAXBUF);
+					bzero(response, MAXBUF);  // clear buffer
 
-					bytesRead = fread(response, sizeof(char), MAXBUF, fp);
+					bytesRead = fread(response, sizeof(char), MAXBUF, fp);  // read file
 
-					if (send(connfd, response, bytesRead, 0) == -1) {
+					if (send(connfd, response, bytesRead, 0) == -1) {  // send info
 						perror("[-]Error in sending file.");
 						break;
 					}
-				} while(bytesRead == MAXBUF);
-				bzero(response, MAXBUF);
-				fclose(fp);
-				free(cleanedURI);
+				} while(bytesRead == MAXBUF);  // send while sending buffer is full when reading
+
+				bzero(response, MAXBUF);  // clear buffer
+				fclose(fp);  // done reading, close file
+				free(cleanedURI);  // free URI
 			} else {
+				// directory error happened, we could not determine file type, or could not open file
 				sprintf(response, errorMessage, version);
 			}
 		} else {
@@ -184,8 +194,11 @@ void echo(int connfd) {
 		send(connfd, response, strlen(response), 0);
 	}
 
+	// free remaining variables
 	free(response);
 	free(exeResolved);
+
+	// IDE said it might already be freed?
 	if(relativeURI)
 		free(relativeURI);
 }
@@ -233,8 +246,8 @@ int open_listenfd(int port) {
 
 /**
  * Determine Content-Type of provided URI
- * @param uri
- * @return
+ * @param uri The path to the local file that we want to determine the type of
+ * @return char * representing MIME type or NULL in case of error.
  */
 char *getType(char *uri) {
 	int i;
@@ -245,21 +258,26 @@ char *getType(char *uri) {
 	if (access(uri, R_OK) != 0)
 		return NULL;
 
+	// Loop through all types
 	for(i = 0; i < COUNT_TYPES; i++){
 		currentExtension = contentTypes[i][0];
 		currentType = contentTypes[i][1];
 		extensionLength = strlen(currentExtension);
 
+		// if extension of current MIME type matches our file
 		if (extensionLength <= strlen(uri) && strcmp(uri + strlen(uri) - extensionLength, currentExtension) == 0) {
 			return currentType;
 		}
 	}
 
+	// unfamiliar type
 	return NULL;
 }
 
-/*
+/**
  * return 0 if uri is a dir, errno otherwise
+ * @param uri The path to the local file/directory
+ * @return char * representing the file we're looking at or NULL in case of error.
  */
 char * isDirectory(char *uri) {
 	DIR* dir = opendir(uri);
